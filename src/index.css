@@ -7,6 +7,9 @@ html, body{
 
 *{
   box-sizing: border-box;
-  touch-action: pan-x;
+  touch-action: pan-y;
+}
 
+h2 {
+  margin: 0;
 }

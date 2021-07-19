@@ -1,38 +1,102 @@
 import React, { Component } from 'react'
 //导入组件
-import { Carousel } from 'antd-mobile';
+import { Carousel, Flex } from 'antd-mobile';
 
+import axios from 'axios';
+
+import Nav1 from '../../assets/images/nav1.jpg'
+import Nav2 from '../../assets/images/nav2.jpg'
+import Nav3 from '../../assets/images/nav3.jpg'
+import Nav4 from '../../assets/images/nav4.jpg'
+
+import './index.css'
+
+const navs = [
+  {
+    id: 1,
+    img: Nav1,
+    title: '整租',
+    path: '/home/list'
+  },
+  {
+    id: 2,
+    img: Nav2,
+    title: '合租',
+    path: '/home/list'
+  },
+  {
+    id: 3,
+    img: Nav3,
+    title: '地图找房',
+    path: '/home/map'
+  },
+  {
+    id: 4,
+    img: Nav4,
+    title: '去出租',
+    path: '/home/list'
+  }
+]
 export default class Index extends Component{
-    state = {
-        data: ['1', '2', '3']
-    }
-    componentDidMount() {
-        // simulate img loading
-        setTimeout(() => {
-          this.setState({
-            data: ['AiyWuByWklrrUDlFignR', 'TekJlZRVCjLFexlOCuWn', 'IJOtIlfsYdTyaDTRVrLI'],
-          });
-        }, 100);
-    }
-    render() {
-        return (
-          <div className='index'>
-            <Carousel autoplay infinite>
-              {this.state.data.map(val => (
-                <a
-                  key={val}
-                  href="http://www.alipay.com"
-                  style={{ display: 'inline-block', width: '100%', height: 212 }}
-                >
-                  <img
-                    src={`https://zos.alipayobjects.com/rmsportal/${val}.png`}
-                    alt=""
-                    style={{ width: '100%', verticalAlign: 'top' }}
-                  />
-                </a>
-              ))}
-            </Carousel>
-          </div>
-        );
+  state = {
+    // 轮播图状态数据
+    swipers: []
+  }
+  
+  // 获取轮播图数据
+  async getSwipers() {
+    const res = await axios.get(`http://localhost:8080/home/swiper`)
+    this.setState(() => {
+      return {
+        swipers: res.data.body
       }
+    })
+  }
+
+  componentDidMount() {
+    this.getSwipers()
+  }
+
+  // 渲染轮播图结构
+  renderSwipers() {
+    return this.state.swipers.map(item => (
+      <a
+        key={item.id}
+        href="http://itcast.cn"
+        style={{ display: 'inline-block', width: '100%', height: 212 }}
+      >
+        <img
+          src={`http://localhost:8080${item.imgSrc}`}
+          alt=""
+          style={{ width: '100%', verticalAlign: 'top' }}
+        />
+      </a>
+    ))
+  }
+
+  // 渲染导航菜单
+  renderNavs() {
+    return navs.map(item => 
+      <Flex.Item key={item.id} onClick={() => 
+      this.props.history.push(item.path)} >
+       <img src={item.img} alt="" />
+       <h2>{item.title}</h2>
+      </Flex.Item>
+    )
+  }
+
+  render() {
+    return (
+      <div className='index'>
+        <Carousel autoplay infinite autoplayInterval={2000}>
+          {this.renderSwipers()}
+        </Carousel>
+
+        {/* 导航菜单 */}
+        <Flex className="nav">
+            {this.renderNavs()}
+        </Flex>
+      </div>
+    );
+  }
 }
