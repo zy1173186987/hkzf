@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 //导入组件
-import { Carousel, Flex } from 'antd-mobile';
+import { Carousel, Flex, Grid } from 'antd-mobile';
 
 import axios from 'axios';
 
@@ -34,13 +34,42 @@ const navs = [
     id: 4,
     img: Nav4,
     title: '去出租',
-    path: '/home/list'
+    path: '/home/profile'
   }
 ]
+
+const data = Array.from(new Array(4)).map((_val, i) => ({
+  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
+  text: `name${i}`,
+}));
+
+/*
+  轮播图存在的两个问题：
+  1.不会自动播放
+  2.从其他路由返回的时候，高度不够
+  原因：轮播图数据是动态加载的，加载完成前后轮播图数量不一致
+  解决：
+  1.在state中添加表示轮播图加载完成的数据
+  2.在轮播图数据加载完成时，修改该数据状态值为true
+  3.只有在轮播图数据加载完成的情况下，才渲染轮播图组件
+*/
 export default class Index extends Component{
   state = {
     // 轮播图状态数据
-    swipers: []
+    swipers: [],
+    isSwiperLoaded: false,
+    // 租房小组数据
+    groups: []
+  }
+
+  // 获取租房小组数据的方法
+  async getGroups() {
+    const res = await axios.get(`http://localhost:8080/home/groups?area-AREA%7C88cff55c-aaa4-e2e0`) 
+    this.setState(() => {
+      return {
+        groups: res.data.body
+      }
+    })
   }
   
   // 获取轮播图数据
@@ -48,13 +77,15 @@ export default class Index extends Component{
     const res = await axios.get(`http://localhost:8080/home/swiper`)
     this.setState(() => {
       return {
-        swipers: res.data.body
+        swipers: res.data.body,
+        isSwiperLoaded: true
       }
     })
   }
 
   componentDidMount() {
     this.getSwipers()
+    this.getGroups()
   }
 
   // 渲染轮播图结构
@@ -88,14 +119,44 @@ export default class Index extends Component{
   render() {
     return (
       <div className='index'>
-        <Carousel autoplay infinite autoplayInterval={2000}>
-          {this.renderSwipers()}
-        </Carousel>
+        {/* 轮播图 */}
+        <div className="swiper">
+          {
+            this.state.isSwiperLoaded ? (
+            <Carousel autoplay infinite autoplayInterval={2000}>
+              {this.renderSwipers()}
+            </Carousel>
+            ) : (
+              ''
+            )
+          }
+        </div>
 
         {/* 导航菜单 */}
         <Flex className="nav">
             {this.renderNavs()}
         </Flex>
+
+        {/* 租房小组 */}
+        <div className="group">
+          <h3 className="title">
+            租房小组<span className="more">更多</span>
+          </h3>
+          {/* 宫格组件 */}
+          <Grid data={data} columnNum={2} hasLine={false} square={false} renderItem={() => (
+            <Flex className="group-item" justify="around">
+              <div className="desc">
+                <p className="title">家住回龙观</p>
+                <span className="info">归属的感觉</span>
+              </div>
+              <img
+                src="http://localhost:3000/static/media/group-1.263b84b0.png"
+                alt=""
+              />
+            </Flex>
+            )}
+          />
+        </div>
       </div>
     );
   }
