@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 //导入组件
-import { Carousel, Flex, Grid } from 'antd-mobile';
+import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile';
 
 import axios from 'axios';
 
@@ -10,6 +10,8 @@ import Nav3 from '../../assets/images/nav3.jpg'
 import Nav4 from '../../assets/images/nav4.jpg'
 
 import './index.css'
+
+import { getCurrentCity } from '../utils/index'
 
 const navs = [
   {
@@ -38,10 +40,10 @@ const navs = [
   }
 ]
 
-const data = Array.from(new Array(4)).map((_val, i) => ({
-  icon: 'https://gw.alipayobjects.com/zos/rmsportal/nywPmnTAvTmLusPxHPSu.png',
-  text: `name${i}`,
-}));
+// 获取地理位置信息
+navigator.geolocation.getCurrentPosition(position => {
+  console.log(position)
+})
 
 /*
   轮播图存在的两个问题：
@@ -59,7 +61,17 @@ export default class Index extends Component{
     swipers: [],
     isSwiperLoaded: false,
     // 租房小组数据
-    groups: []
+    groups: [],
+    news: [],
+    // 当前城市名称
+    curCityName: '上海'
+  }
+
+  async getNews() {
+    const res = await axios.get(`http://localhost:8080/home/news?area=AREA%7C88cff55c-aaa4-e2e0`)
+    this.setState({
+      news: res.data.body
+    })
   }
 
   // 获取租房小组数据的方法
@@ -83,9 +95,23 @@ export default class Index extends Component{
     })
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getSwipers()
     this.getGroups()
+    this.getNews()
+
+    // // 通过IP定位获取到当前城市名称
+    // const curCity = new window.BMapGL.LocalCity()
+    // curCity.get(async res => {
+    //   const result = await axios.get(`http://localhost:8080/area/info?name=${res.name}`)
+    //   this.setState({
+    //     curCityName: result.data.body.label
+    //   })
+    // })
+    const curCity = await getCurrentCity()
+    this.setState({
+      curCityName: curCity.label
+    })
   }
 
   // 渲染轮播图结构
@@ -116,6 +142,27 @@ export default class Index extends Component{
     )
   }
 
+  renderNews() {
+    return this.state.news.map(item => (
+      <div className="news-item" key={item.id}>
+        <div className="imgwrap">
+          <img
+            className="img"
+            src={`http://localhost:8080${item.imgSrc}`}
+            alt=""
+          />
+        </div>
+        <Flex className="content" direction="column" justify="between">
+          <h3 className="title">{item.title}</h3>
+          <Flex className="info" justify="between">
+            <span>{item.from}</span>
+            <span>{item.date}</span>
+          </Flex>
+        </Flex>
+      </div>
+    ))
+  }
+
   render() {
     return (
       <div className='index'>
@@ -130,7 +177,27 @@ export default class Index extends Component{
               ''
             )
           }
-        </div>
+
+        {/* 搜索框 */}
+        <Flex className="search-box">
+          {/* 左侧白色区域 */}
+          <Flex className="search">
+            {/* 位置 */}
+            <div className="lcoation" onClick={() => this.props.history.push('/cityList')}>
+              <span className="name">{this.state.curCityName}</span>
+              <i className="iconfont icon-arrow" />
+            </div>
+            {/* 搜索表单 */}
+            <div className="form" onClick={() => this.props.history.push('/search')}>
+              <i className="iconfont icon-seach" />
+              <span className="text">请输入小区或地址</span>
+            </div>
+          </Flex>
+          {/* 右侧地图区域 */}
+          <i className="iconfont icon-map" onClick={() => this.props.history.push('/map')}/>
+        </Flex>
+      </div>
+
 
         {/* 导航菜单 */}
         <Flex className="nav">
@@ -139,23 +206,33 @@ export default class Index extends Component{
 
         {/* 租房小组 */}
         <div className="group">
-          <h3 className="title">
+          <h3 className="group-title">
             租房小组<span className="more">更多</span>
           </h3>
           {/* 宫格组件 */}
-          <Grid data={data} columnNum={2} hasLine={false} square={false} renderItem={() => (
-            <Flex className="group-item" justify="around">
+          <Grid
+            data={this.state.groups}
+            columnNum={2} hasLine={false}
+            square={false}
+            renderItem={(item) => (
+            <Flex className="group-item" justify="around" key={item.id}>
               <div className="desc">
-                <p className="title">家住回龙观</p>
-                <span className="info">归属的感觉</span>
+              <p className="title">{item.title}</p>
+                <span className="info">{item.desc}</span>
               </div>
               <img
-                src="http://localhost:3000/static/media/group-1.263b84b0.png"
+                src={`http://localhost:8080${item.imgSrc}`}
                 alt=""
               />
             </Flex>
             )}
           />
+        </div>
+
+        {/* 最新资讯 */}
+        <div className="news">
+          <h3 className="group-title">最新资讯</h3>
+          <WingBlank size="md">{this.renderNews()}</WingBlank>
         </div>
       </div>
     );
