@@ -4,13 +4,7 @@
 }
 
 .citylist .navbar {
-    background-color: #f6f5f6;
-    color: #333;
     margin-top: -45px;
-}
-
-.citylist .navbar .am-navbar-title {
-    color: #333;
 }
 
 .city .title{

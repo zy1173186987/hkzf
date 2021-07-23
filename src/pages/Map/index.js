@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 
 import './index.css'
 
+import NavHeader from '../../components/NavHeader'
+
 export default class Map extends Component {
     componentDidMount() {
         const map = new window.BMapGL.Map('container')
@@ -11,6 +13,9 @@ export default class Map extends Component {
     render() {
         return (
             <div className="map">
+                <NavHeader>
+                    地图找房
+                </NavHeader>
                 <div id="container"></div>
             </div>
         )
