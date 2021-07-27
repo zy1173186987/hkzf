@@ -12,6 +12,8 @@ import NavHeader from '../../components/NavHeader'
 
 import { getCurrentCity } from '../utils/index'
 
+// import styles from './index.module.css'
+
 // 数据格式化的方法
 const formatCityData = (list) => {
     const cityList = {}
@@ -202,6 +204,9 @@ export default class CityList extends Component {
                 <ul className="city-index">
                     {this.renderCityIndex()}
                 </ul>
+
+                {/* 样式覆盖问题
+                <div className={styles.test}>样式覆盖问题</div> */}
             </div>
         )
     }
