@@ -7,6 +7,7 @@ import NavHeader from '../../components/NavHeader'
 import styles from './index.module.css'
 
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const BMap = window.BMapGL
 
@@ -21,6 +22,12 @@ const labelStyle = {
 }
 
 export default class Map extends Component {
+    state = {
+        // 小区下的房源列表
+        houseList: [],
+        // 是否展示房源列表
+        isShowList: false
+    }
     componentDidMount() {
         this.initMap()
     }
@@ -236,11 +243,58 @@ export default class Map extends Component {
         
         // 添加单击事件
         label.addEventListener('click', () => {
-            console.log('bei dian ji')
+            // console.log('bei dian ji')
+
+            this.getHouseList(id)
         })
         
         // 添加覆盖物到地图中
         this.map.addOverlay(label)
+    }
+
+    // 获取小区房源数据
+    async getHouseList(id) {
+        const res =  await axios.get(`http://localhost:8080/houses?cityId=${id}`)
+        // console.log('小区的房源数据：', res)
+        this.setState({
+            houseList: res.data.body.list,
+
+            // 展示房源列表
+            isShowList: true
+        })
+    }
+
+    // 封装渲染房屋列表
+    renderHouseList() {
+        return this.state.houseList.map(item =>
+            <div className={styles.house} key={item.houseCode}>
+                <div className={styles.imgWrap}>
+                    <img
+                        className={styles.img}
+                        src={`http://localhost:8080${item.houseImg}`}
+                        alt=""
+                    />
+                </div>
+                <div className={styles.content}>
+                    <h3 className={styles.title}>{item.title}</h3>
+                    <div className={styles.desc}>{item.desc}</div>
+                    <div>
+                        {/* [近地铁], [随时看房] */}
+                        {item.tags.map((tag, index) => {
+                            const tagClass = 'tag' + (index + 1)
+                            return (
+                                <span className={[styles.tag, styles[tagClass]].join(' ')} key={tag}>
+                                    {tag}
+                                </span>
+                            )
+                        })}
+                    </div>
+                    <div className={styles.price}>
+                        <span className={styles.priceNum}>{item.price}</span> 元/月
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     render() {
@@ -250,6 +304,26 @@ export default class Map extends Component {
                     地图找房
                 </NavHeader>
                 <div id="container" className={styles.container}></div>
+
+                {/* 房源数据 */}
+                {/* 添加 styles.show 展示房屋列表 */}
+                <div className={[
+                    styles.houseList,
+                    this.state.isShowList ? styles.show : ' '
+                    ].join(' ')}
+                >
+                    <div className={styles.titleWrap}>
+                        <h1 className={styles.listTitle}>房屋列表</h1>
+                        <Link className={styles.titleMore} to="/home/list">
+                            更多房源
+                        </Link>
+                    </div>
+
+                    <div className={styles.houseItems}>
+                        {/* 房屋结构 */}
+                        {this.renderHouseList()}
+                    </div>
+                </div>
             </div>
         )
     }
