@@ -6,8 +6,15 @@ import NavHeader from '../../components/NavHeader'
 
 import styles from './index.module.css'
 
-import axios from 'axios'
+// import axios from 'axios'
+import { API } from '../../utils/api'
+
 import { Link } from 'react-router-dom'
+
+import { Toast } from 'antd-mobile'
+
+// 导入BASE_URL
+import { BASE_URL } from '../../utils/url'
 
 const BMap = window.BMapGL
 
@@ -110,24 +117,44 @@ export default class Map extends Component {
         }, label)
         // 初始化地图 
         // map.centerAndZoom(point, 15)
+
+        // 给地图绑定移动事件
+        map.addEventListener('movestart', () => {
+            // console.log('movestart')
+            if (this.state.isShowList) {
+                this.setState({
+                    isShowList: false
+                })
+            }
+        })
     }
 
     // 渲染覆盖物入口
     // 1 接收区域 id 参数,获取该区域下的房源数据
     // 2 获取房源数据类型以及下级地图缩放级别
     async renderOverlays(id) {
-        const res = await axios.get(`http://localhost:8080/area/map?id=${id}`)
-        // console.log(res)
-        const data = res.data.body
+        try {
+            // 开启loading
+            Toast.loading('加载中...', 0, null, false)
 
-        // 调用 getTypeAndZoom 方法获取级别和类型
-        const { nextZoom, type} = this.getTypeAndZoom()
+            const res = await API.get(`/area/map?id=${id}`)
+            // 关闭loading
+            Toast.hide()
 
-        // 遍历数据
-        data.forEach(item => {
-            // 创建覆盖物
-            this.createOverlays(item, nextZoom, type)
-        })
+            // console.log(res)
+            const data = res.data.body
+
+            // 调用 getTypeAndZoom 方法获取级别和类型
+            const { nextZoom, type} = this.getTypeAndZoom()
+
+            // 遍历数据
+            data.forEach(item => {
+                // 创建覆盖物
+                this.createOverlays(item, nextZoom, type)
+            })
+        } catch (e){
+            Toast.hide()
+        }
     }
 
     // 计算要绘制的覆盖物类型和下一个缩放级别
@@ -227,7 +254,7 @@ export default class Map extends Component {
         })
         
         // 给 label 对象添加一个唯一标识
-        label.id = id
+        // label.id = id
         
         // 设置房源覆盖物内容
         label.setContent(`
@@ -242,10 +269,16 @@ export default class Map extends Component {
         label.setStyle(labelStyle)
         
         // 添加单击事件
-        label.addEventListener('click', () => {
-            // console.log('bei dian ji')
+        label.addEventListener('click', (e) => {
+            console.log(e)
 
             this.getHouseList(id)
+
+            // 获取当前被点击项
+            // const target = e.changedTouches[0]
+            // this.map.panBy(
+            //     window.innerWidth / 2 - target.clientX,
+            //     (window.innerHeight - 330) / 2 -target.client)
         })
         
         // 添加覆盖物到地图中
@@ -254,14 +287,21 @@ export default class Map extends Component {
 
     // 获取小区房源数据
     async getHouseList(id) {
-        const res =  await axios.get(`http://localhost:8080/houses?cityId=${id}`)
-        // console.log('小区的房源数据：', res)
-        this.setState({
-            houseList: res.data.body.list,
+        try {
+            Toast.loading('加载中...', 0, null, false)
 
-            // 展示房源列表
-            isShowList: true
-        })
+            const res = await API.get(`/houses?cityId=${id}`)
+            
+            Toast.hide() 
+            // console.log('小区的房源数据：', res)
+            this.setState({
+                houseList: res.data.body.list,
+                // 展示房源列表
+                isShowList: true
+            })
+        } catch (e) {
+            Toast.hide()
+        } 
     }
 
     // 封装渲染房屋列表
@@ -271,7 +311,7 @@ export default class Map extends Component {
                 <div className={styles.imgWrap}>
                     <img
                         className={styles.img}
-                        src={`http://localhost:8080${item.houseImg}`}
+                        src={BASE_URL + item.houseImg}
                         alt=""
                     />
                 </div>
@@ -309,7 +349,7 @@ export default class Map extends Component {
                 {/* 添加 styles.show 展示房屋列表 */}
                 <div className={[
                     styles.houseList,
-                    this.state.isShowList ? styles.show : ' '
+                    this.state.isShowList ? styles.show : ''
                     ].join(' ')}
                 >
                     <div className={styles.titleWrap}>

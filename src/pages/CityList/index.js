@@ -10,7 +10,7 @@ import './index.css'
 
 import NavHeader from '../../components/NavHeader'
 
-import { getCurrentCity } from '../utils/index'
+import { getCurrentCity } from '../../utils/index'
 
 // import styles from './index.module.css'
 

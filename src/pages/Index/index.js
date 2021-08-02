@@ -11,7 +11,9 @@ import Nav4 from '../../assets/images/nav4.jpg'
 
 import './index.css'
 
-import { getCurrentCity } from '../utils/index'
+import { getCurrentCity } from '../../utils/index.js'
+
+import { BASE_URL } from '../../utils/url'
 
 const navs = [
   {
@@ -123,7 +125,7 @@ export default class Index extends Component{
         style={{ display: 'inline-block', width: '100%', height: 212 }}
       >
         <img
-          src={`http://localhost:8080${item.imgSrc}`}
+          src={BASE_URL + item.imgSrc}
           alt=""
           style={{ width: '100%', verticalAlign: 'top' }}
         />
@@ -148,7 +150,7 @@ export default class Index extends Component{
         <div className="imgwrap">
           <img
             className="img"
-            src={`http://localhost:8080${item.imgSrc}`}
+            src={BASE_URL + item.imgSrc}
             alt=""
           />
         </div>
@@ -221,7 +223,7 @@ export default class Index extends Component{
                 <span className="info">{item.desc}</span>
               </div>
               <img
-                src={`http://localhost:8080${item.imgSrc}`}
+                src={BASE_URL + item.imgSrc}
                 alt=""
               />
             </Flex>
