@@ -1,9 +1,4 @@
 
-.swiper {
-    height: 212px;
-    position: relative;
-}
-
 .search-box {
     position: absolute;
     top: 25px;
@@ -20,8 +15,12 @@
     background-color: #fff;
 }
 
-.icon-arrow {
-    margin-left: 2px;
+.location {
+    width: 50px;
+}
+
+.location .icon-arrow {
+    margin-left: 10px;
     font-size: 12px;
     color: #7f7f80;
 }
@@ -30,6 +29,7 @@
     border-left: solid 1px #e5e5e5;
     margin-left: 12px;
     line-height: 16px;
+    width: 200px;
 }
 
 .icon-seach {
@@ -39,7 +39,7 @@
     font-size: 15px;
 }
 
-.text {
+.form .text {
     padding-left: 4px;
     font-size: 13px;
     color: #9c9fa1;
@@ -48,4 +48,5 @@
 .icon-map {
     font-size: 25px;
     color: #fff;
+    margin-left: 8px;
 }

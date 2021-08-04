@@ -15,6 +15,8 @@ import { getCurrentCity } from '../../utils/index.js'
 
 import { BASE_URL } from '../../utils/url'
 
+import SearchHeader from '../../components/SearchHeader';
+
 const navs = [
   {
     id: 1,
@@ -181,23 +183,7 @@ export default class Index extends Component{
           }
 
         {/* 搜索框 */}
-        <Flex className="search-box">
-          {/* 左侧白色区域 */}
-          <Flex className="search">
-            {/* 位置 */}
-            <div className="lcoation" onClick={() => this.props.history.push('/cityList')}>
-              <span className="name">{this.state.curCityName}</span>
-              <i className="iconfont icon-arrow" />
-            </div>
-            {/* 搜索表单 */}
-            <div className="form" onClick={() => this.props.history.push('/search')}>
-              <i className="iconfont icon-seach" />
-              <span className="text">请输入小区或地址</span>
-            </div>
-          </Flex>
-          {/* 右侧地图区域 */}
-          <i className="iconfont icon-map" onClick={() => this.props.history.push('/map')}/>
-        </Flex>
+        <SearchHeader cityName={this.state.curCityName} />
       </div>
 
 

@@ -3,17 +3,17 @@ import React, { Component } from 'react'
 //导入路由
 import { Route } from 'react-router-dom'
 
-//导入News组件
-import News from '../News'
-import Index from '../Index'
-import Profile from '../Profile'
-import HouseList from '../HouseList'
-
 //导入TarBar
 import { TabBar }  from 'antd-mobile'
 
 //导入组件自己的样式文件
 import './index.css'
+
+//导入News组件
+import News from '../News'
+import Index from '../Index'
+import HouseList from '../HouseList'
+import Profile from '../Profile'
 
 //TabBar数据
 const tabItems = [

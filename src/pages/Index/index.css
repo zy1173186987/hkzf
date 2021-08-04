@@ -2,7 +2,7 @@
 .swiper {
     height: 212px;
     position: relative;
-}
+} 
 
 .search-box {
     position: absolute;
@@ -39,7 +39,7 @@
     font-size: 15px;
 }
 
-.form text {
+.form .text {
     padding-left: 4px;
     font-size: 13px;
     color: #9c9fa1;
