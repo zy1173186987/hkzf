@@ -15,13 +15,21 @@ const titleSelectedStatus = {
     more: false
 }
 
+const selectedValues = {
+    area: ['area', 'null'],
+    mode: ['null'],
+    price: ['null'],
+    more: []
+}
 export default class Filter extends Component {
     state = {
         titleSelectedStatus,
         // 控制FilterPicker或FilterMore组件的展示或隐藏
         openType: '',
         // 所有筛选条件数据
-        filtersData: {}
+        filtersData: {},
+        // 筛选条件选中值
+        selectedValues,
     }
 
     componentDidMount() {
@@ -34,7 +42,6 @@ export default class Filter extends Component {
         const { value } = JSON.parse(localStorage.getItem('hkzf_city')) 
         const res = await API.get(`/houses/condition?id=${value}`)
 
-        console.log(res)
         this.setState({
             filtersData: res.data.body
         })
@@ -64,20 +71,64 @@ export default class Filter extends Component {
     }
 
     // 确定
-    onSave = () => {
+    onSave = (type, value) => {
+        console.log(type, value)
         this.setState({
-            openType: false
+            openType: '',
+            selectedValues: {
+                ...this.state.selectedValues,
+                // 更新当前 type 对应的选中值
+                [type]: value
+            }
         })
     }
 
     // 渲染FilterPicker组件的方法
     renderFilterPicker() {
-        const { openType } = this.state
+        const {
+            openType,
+            filtersData: { area, subway, rentType, price },
+            selectedValues
+        } = this.state
 
         if (openType !== 'area' && openType !== 'mode' && openType !== 'price') {
             return null
-        } 
-        return <FilterPicker onCancel={this.onCancel} onSave={this.onSave} />
+        }
+
+        // 根据 openType 来拿到当前筛选条件数据
+        let data = []
+        let cols = 3
+        let defaultValue = selectedValues[openType]
+        switch (openType) {
+            case 'area':
+                // 获取到区域数据
+                data = [area, subway]
+                cols = 3
+                break;
+            
+            case 'mode':
+                data = rentType
+                cols = 1
+                break;
+            
+            case 'price':
+                data = price
+                cols = 1
+                break;
+        
+            default:
+                break;
+        }
+
+        return <FilterPicker
+            key={openType}
+            onCancel={this.onCancel}
+            onSave={this.onSave}
+            data={data}
+            cols={cols}
+            type={openType}
+            defaultValue={defaultValue}
+        />
     }
 
     render() {
@@ -93,7 +144,9 @@ export default class Filter extends Component {
 
                 <div className={styles.content}>
                     {/* 标题栏 */}
-                    <FilterTitle titleSelectedStatus={titleSelectedStatus} onClick={this.onTitleClick} />
+                    <FilterTitle
+                        titleSelectedStatus={titleSelectedStatus}
+                        onClick={this.onTitleClick} />
 
                     {
                         this.renderFilterPicker()
