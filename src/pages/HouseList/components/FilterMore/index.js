@@ -6,13 +6,24 @@ import styles from './index.module.css'
 
 export default class FilterMore extends Component {
     // 渲染标签
-    renderFilters() {
+    renderFilters(data) {
         // 高亮类名: styles.tagActice
-        return (
-            <span className={[styles.tag, styles.tagActive].join(' ')}>东北</span>
-        )
+        return data.map(item => {
+            return (
+                <span
+                    key={item.value}
+                    className={[styles.tag].join(' ')}
+                >
+                    {item.label}
+                </span>
+            )
+        })
     }
     render() {
+        const {
+            data: {roomType, oriented, floor, characteristic}
+        } = this.props
+        
         return (
             <div className={styles.root}> 
                 {/* 遮罩层 */}
@@ -22,16 +33,16 @@ export default class FilterMore extends Component {
                 <div className={styles.tags}>
                     <dl className={styles.dl}>
                         <dt className={styles.dt}>户型</dt>
-                        <dd className={styles.dd}>{this.renderFilters()}</dd>
+                        <dd className={styles.dd}>{this.renderFilters(roomType)}</dd>
                         
                         <dt className={styles.dt}>朝向</dt>
-                        <dd className={styles.dd}>{this.renderFilters()}</dd>
+                        <dd className={styles.dd}>{this.renderFilters(oriented)}</dd>
 
                         <dt className={styles.dt}>楼层</dt>
-                        <dd className={styles.dd}>{this.renderFilters()}</dd>                            
+                        <dd className={styles.dd}>{this.renderFilters(floor)}</dd>                            
                     
                         <dt className={styles.dt}>房屋亮点</dt>
-                        <dd className={styles.dd}>{this.renderFilters()}</dd>                                
+                        <dd className={styles.dd}>{this.renderFilters(characteristic)}</dd>                                
                     </dl>
                 </div>
                     

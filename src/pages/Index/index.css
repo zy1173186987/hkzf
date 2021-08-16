@@ -130,7 +130,11 @@ img {
 }
 
 .imgwrap .img {
-    width: 120px;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 40%;
+    float: left;
+    flex-wrap: wrap;
 }
 
 .news .group-title{
@@ -141,6 +145,7 @@ img {
 
 .content .title {
     position: relative;
+    margin-bottom: 50px;
 }
 
 .content .info {

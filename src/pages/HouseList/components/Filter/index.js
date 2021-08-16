@@ -51,16 +51,49 @@ export default class Filter extends Component {
     // 点击标题菜单实现高亮
     // 注意this指向的问题
     onTitleClick = type => {
-        this.setState(prevState => {
-            return {
-                titleSelectedStatus: {
-                        ...prevState.titleSelectedStatus,
-                    [type]: true
-                },
-                // 展示对话框
-                openType: type
+        const { selectedValues, titleSelectedStatus } = this.state
+        // 创建新的标题选中状态对象
+        const newTitleSelectedStatus = { ...titleSelectedStatus }
+        
+        // 遍历标题选中状态对象
+        Object.keys(titleSelectedStatus).forEach(key => {
+            if (key === type) {
+                newTitleSelectedStatus[type] = true
+                return
+            }
+            const selectedVal = selectedValues[key]
+            if (key === 'area' && (selectedVal.length !== 2 || selectedVal[0] !== 'area')) {
+                // 高亮
+                newTitleSelectedStatus[key] = true
+            } else if (key === 'mode' && selectedVal[0] !== 'null') {
+                // 高亮
+                newTitleSelectedStatus[key] = true
+            } else if (key === 'price' && selectedVal[0] !== 'null') {
+                // 高亮
+                newTitleSelectedStatus[key] = true
+            } else if (key === 'more') {
+                // 更多选择项FilterMore
+            } else {
+                newTitleSelectedStatus[key] = false
             }
         })
+
+        this.setState({
+            openType: type,
+            titleSelectedStatus: newTitleSelectedStatus
+        })
+
+        // this.setState(prevState => {
+        //     return {
+        //         titleSelectedStatus: {
+        //                 ...prevState.titleSelectedStatus,
+        //             [type]: true
+        //         },
+        //         // 展示对话框
+        //         openType: type,
+        //         titleSelectedStatus: newTitleSelectedStatus
+        //     }
+        // })
     }
 
     // 取消隐藏对话框
@@ -131,6 +164,20 @@ export default class Filter extends Component {
         />
     }
 
+    renderFilterMore() {
+        const { openType, filtersData: { roomType, oriented, floor, characteristic } } =
+        this.state
+        if (openType !== 'more') {
+            return null
+        }
+
+        const data = {
+            roomType, oriented, floor, characteristic
+        }
+
+        return <FilterMore data={data} />
+    }
+
     render() {
         const { titleSelectedStatus, openType } = this.state
 
@@ -152,7 +199,7 @@ export default class Filter extends Component {
                         this.renderFilterPicker()
                     }
 
-                    {/* <FilterMore /> */}
+                    {this.renderFilterMore()}
                 </div>
             </div>
         )

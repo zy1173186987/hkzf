@@ -1,5 +1,14 @@
 .root {
     position: relative;
     z-index: 3;
+    display: flex;
+    border: 1px solid transparent;
+    background: #f6f5f6;
+    padding-bottom: 10px;
 }
+
+.dropdown {
+    padding-left: 15px;
+}
+
 
