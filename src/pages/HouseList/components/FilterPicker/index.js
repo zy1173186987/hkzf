@@ -35,7 +35,7 @@ export default class FilterPicker extends Component {
 
         {/* 底部按钮 */}
         <FilterFooter
-          onCancel={() => onCancel()}
+          onCancel={() => onCancel(type)}
           onOk={() => onSave(type, value)}
         />
       </>

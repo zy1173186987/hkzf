@@ -12,3 +12,9 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.tags {
+    background-color: #fff;
+    height: 80%;
+    width: 70%;
+}
